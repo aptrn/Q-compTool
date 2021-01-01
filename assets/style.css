@@ -1,0 +1,10 @@
+#sequence {
+    display: inline-flex;
+    margin-left: 1%;
+    padding: 10%;
+}
+#info {
+    display: inline;
+    padding: 20;
+    margin: 20%;
+}
