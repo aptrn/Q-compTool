@@ -1,7 +1,56 @@
-#sequence {
+.title{
     display: inline-flex;
+}
+#pool {
     margin-left: 1%;
-    padding: 10%;
+}
+#chordsPool  {
+    display: flex;
+}
+#piano-container{
+    display: flex;
+    width:10%;
+}
+.result-name{
+    display: flex;
+    padding: 1%;
+}
+.result-notes{
+    display: flex;
+    padding: 1%;
+}
+.play-chord{
+    display: inline-flex;
+}
+.chord {
+    display: block;
+    padding: 2%;
+    width: 20%;
+    border: 3px;
+    border-style: solid;
+    border-color: aqua;
+}
+.chord:hover {
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+  }
+.sequencesPool {
+    display: grid;
+}
+.sequence{
+    display: table-row;
+}
+.step {
+    display: flex;
+    padding: 2;
+}
+.alteration-pool {
+    display: flex;
+    padding: 2%;
+    width: 2%;
+}
+#sequences {
+    display: flow-root;
+    width: 100%;
 }
 #info {
     display: inline;

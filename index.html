@@ -2,17 +2,20 @@
     <script src="./lib//jquery.min.js"></script>
     <script src="./lib/tonal.min.js"></script>
     <script src=./lib/audiosynth.js></script>
+    <script src="./lib/piano-keys-webcomponent.umd.min.js"></script>  
     <link rel="stylesheet" href="./assets/style.css">
 </head>
-<body>
+<body onload="updateValues()">
     <h1>Q-compTool</h1>
-    <button class='add'>Add Step</button>
     <form id="comp">  
         <div id="info">
+            <div id="piano-container">
+                <piano-keys id="piano-viz" keyboard-layout="C" key-count="12" read-only="on"></piano-keys>
+            </div>
             <label>Title</label>
             <input onInput="updateValues()" type="text" id="title"></div>
             <label>Key</label>
-            <select onInput="updateValues()" id="key">
+            <select onInput="updateValues()" id="root">
                 <option value = "C">C</option>
                 <option value = "C#">C#</option>
                 <option value = "D">D</option>
@@ -26,10 +29,36 @@
                 <option value = "A#">A#</option>
                 <option value = "B">B</option>
             </select>
+            <select onInput="updateValues()" id="key">
+                <option value = "Maj">Major</option>
+                <option value = "MinHarmonic">Minor Harmonic</option>
+                <option value = "MinMelodic">Minor Melodic</option>
+                <option value = "MinNatural">Minor Natural</option>
+            </select>
             <button onclick="export_output()">Export JSON</button>
         </div>
-        <div id="compositionForm">
-            <div id="sequence"></div>
+        <div id="instrument">
+            <label>octave</label>
+            <input id="octave" type="range" onInput="updateValues()" min="0" max="5" default="3"></input>
+            <label>duration</label>
+            <input id="duration" type="range" onInput="updateValues()" min="0.3" max="3" default="2"></input>
+        </div>
+        <div id="sequences">
+            <div class="title">
+                <h1>Sequences</h1>
+                <button class='addSequence'>Add Sequence</button>
+            </div>
+            <div id="sequencesPool">
+        </div>
+        <div id="chords">
+            <div class="title">
+                <h1>Chord Pool</h1>
+                <button class='addChord'>Add Chord</button>
+                <button class='matchGrades' onclick="matchGrades()">match grades</button>
+                <button class='randomAlterations' onclick="randomAlterations()">random Alterations</button>
+            </div>
+            <div id="chordsPool">
+            </div>
         </div>
         </div>
     </form>  
