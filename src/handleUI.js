@@ -1,7 +1,7 @@
 let tensionLength = 4;
 let gradesList = [];
-let alterationList = ["","m","6", "m6", "7","m7","9","m9","11","m11","sus2","sus4","aug"];
-let alterationListPretty = ["Major","Minor","Sixth", "Minor Sixth", "Seventh","Minor Seventh","Ninth","Minor Ninth","Eleventh","Minor Eleventh","Suspended Second","Suspended Fourth","Augmented"];
+let alterationList = ["","m", "°", "aug", "6", "m6", "7","m7","9","m9","11","m11","sus2","sus4"];
+let alterationListPretty = ["Major","Minor", "Diminished", "Augmented", "Sixth", "Minor Sixth", "Seventh","Minor Seventh","Ninth","Minor Ninth","Eleventh","Minor Eleventh","Suspended Second","Suspended Fourth"];
 let output = {};
 let iter = 0;
 let select = 0;
@@ -361,7 +361,6 @@ function updateSequences(){
             for(let t = 0; t < allTags.length; t++){
                 output.sequences[i].tag[t] = allTags[t].innerHTML;
             }
-            console.log(output.sequences[i].tag)
             let thisStep = $(thisSequence).find(".step")[s];
             let chordSelection = $(thisStep).find("#chord-sel")[0].value;
             let tensionSelection = $(thisStep).find(".tension-sel")[0].value;
