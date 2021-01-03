@@ -12,8 +12,15 @@
             <div id="piano-container">
                 <piano-keys id="piano-viz" keyboard-layout="C" key-count="12" read-only="on"></piano-keys>
             </div>
-            <label>Title</label>
-            <input onInput="updateValues()" type="text" id="title"></div>
+            <div id="import">
+                <input type="file" id="browse" value="Import"/>
+                <button onclick="import_json()">Import JSON</button>
+            </div>
+            <div id="export">
+                <label>Title</label>
+                <input onInput="updateValues()" type="text" id="title">
+                <button onclick="export_json()">Export JSON</button>
+            </div>
             <label>Key</label>
             <select onInput="updateValues()" id="root">
                 <option value = "C">C</option>
@@ -35,7 +42,6 @@
                 <option value = "MinMelodic">Minor Melodic</option>
                 <option value = "MinNatural">Minor Natural</option>
             </select>
-            <button onclick="export_output()">Export JSON</button>
         </div>
         <div id="instrument">
             <label>octave</label>

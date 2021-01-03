@@ -1,7 +1,7 @@
 let tensionLength = 4;
 let gradesList = [];
 let alterationList = ["","m","6", "m6", "7","m7","9","m9","11","m11","sus2","sus4","aug"];
-let alterationListPretty = ["Major","Minor","Sixth", "Minor Sixth", "Seventh","Minor Seventh","Ninth","Minor Ninth","Elevnth","Minor Eleventh","Suspended Second","Suspended Fourth","Augmented"];
+let alterationListPretty = ["Major","Minor","Sixth", "Minor Sixth", "Seventh","Minor Seventh","Ninth","Minor Ninth","Eleventh","Minor Eleventh","Suspended Second","Suspended Fourth","Augmented"];
 let output = {};
 let iter = 0;
 let select = 0;
@@ -86,17 +86,17 @@ function createPlaySeq(){
     return playButton;
 }
 
-function createSequenceStep(index){
+function createSequenceStep(index, chordSel, tensionSel){
     let stepContainer = document.createElement("div");
     stepContainer.setAttribute("class", "step");
     stepContainer.appendChild(createIndexLabel(index));
-    stepContainer.appendChild(createChordSelector());
-    stepContainer.appendChild(createTensionSelector());
+    stepContainer.appendChild(createChordSelector(chordSel));
+    stepContainer.appendChild(createTensionSelector(tensionSel));
     stepContainer.appendChild(createResult());
     return stepContainer;
 }
 
-function createTensionSelector(){
+function createTensionSelector(defValue){
     let tensionSelContainer = document.createElement("div");
     let label = document.createElement("label");
     label.innerHTML = "Tension";
@@ -112,11 +112,12 @@ function createTensionSelector(){
     $(select).on('input', function(){
         updateValues();
     });
+    if(defValue != undefined) select.value = defValue;
     tensionSelContainer.appendChild(select);
     return tensionSelContainer;
 }
 
-function createChordSelector(){
+function createChordSelector(defValue){
     let chordSelContainer = document.createElement("div");
     let label = document.createElement("label");
     label.innerHTML = "Chord";
@@ -133,6 +134,7 @@ function createChordSelector(){
     $(select).on('input', function(){
         updateValues();
     });
+    if(defValue != undefined) select.value = defValue;
     chordSelContainer.appendChild(select);
     return chordSelContainer;
 }
@@ -214,7 +216,7 @@ function createAlterationSelector(index){
     select.setAttribute("class","tension-sel");
     for(let i = 0; i < alterationList.length; i++){
         let option = document.createElement("option");
-        option.value = alterationList[i];
+        option.value = i;
         option.innerHTML = alterationListPretty[i];
         select.appendChild(option);
     }
@@ -261,49 +263,36 @@ function createPlayButton(tension){
     });
     return playButton;
 }
-
-function updateValues(){
-    //INSTRUMENT INFO
-    octave = $("#octave")[0].value;
-    duration = $("#duration")[0].value;
-    
-    //COMP INFO
-    let title = $("#title")[0].value;
-    let root = $("#root")[0].value;
-    let key = $("#key")[0].value;
-    output.title = title;
-    output.root = root;
-    output.key = key;
-    if(key == "Maj") gradesList = Tonal.Key.majorKey(root).grades;
-    else if(key == "MinHarmonic")gradesList = Tonal.Key.minorKey(root).harmonic.grades;
-    else if(key == "MinMelodic")gradesList = Tonal.Key.minorKey(root).melodic.grades;
-    else if(key == "MinNatural")gradesList = Tonal.Key.minorKey(root).natural.grades;
+function updateChords(){
 
     //POOL
     let allChords = $(".chord");
     let resultStrings = new Array(tensionLength);
+    let resultSelection =  new Array(tensionLength);
     for(let t = 0; t < tensionLength; t++){
         resultStrings[t] = new Array(allChords.length);    
+        resultSelection[t] =  new Array(allChords.length);
         for(let i = 0; i < allChords.length; i++){
             allChords[i].index = i;
             $(allChords[i]).find(".index")[0].innerHTML = "Index: " + (i + 1);
-            let gradeSel = $(allChords[i]).find(".grade-sel")[0].value;
-            let grade = gradesList[gradeSel];
-            let add = $(allChords[i]).find(".tension-sel")[t].value
-            resultStrings[t][i] = grade + add;
-            
+            resultSelection[t][i] = {};
+            resultSelection[t][i].grade = $(allChords[i]).find(".grade-sel")[0].value;
+            resultSelection[t][i].tension = $(allChords[i]).find(".tension-sel")[t].value;
+            resultStrings[t][i] = gradesList[resultSelection[t][i].grade] + alterationList[resultSelection[t][i].tension];
         }
     }
     output.pool = new Array(allChords.length)
     let leadsheets = new Array(tensionLength);
-	for(let t = 0; t < tensionLength; t++) leadsheets[t] = Tonal.Progression.fromRomanNumerals(root, resultStrings[t]);
+	for(let t = 0; t < tensionLength; t++) leadsheets[t] = Tonal.Progression.fromRomanNumerals(output.root, resultStrings[t]);
+    console.log(leadsheets[0]);
 	for(let i = 0; i < allChords.length; i++){
         output.pool[i] = {};
-		output.pool[i].index = i;
+		output.pool[i].selection = resultSelection[0][i].grade;
 		output.pool[i].tension = new Array(tensionLength);
 		for(let t = 0; t < tensionLength; t++){
             let resultChord = Tonal.Chord.get(leadsheets[t][i]);
-			output.pool[i].tension[t] = {};
+            output.pool[i].tension[t] = {};
+		    output.pool[i].tension[t].selection = resultSelection[t][i].tension;
 			output.pool[i].tension[t].name = resultChord.name;
             output.pool[i].tension[t].notes = resultChord.notes.map(Tonal.Note.chroma);
             $(allChords[i]).find(".result-name")[t].innerHTML = output.pool[i].tension[t].name ;
@@ -322,7 +311,9 @@ function updateValues(){
             }
 		}
     }
+}
 
+function updateSequences(){
     //SEQUENCES
     let allSequences = $(".sequence");
     output.sequences = new Array(allSequences.length);
@@ -331,33 +322,46 @@ function updateValues(){
         let length = updateSequenceUI(thisSequence);
         $(thisSequence)[0].index = i;
         output.sequences[i] = {};
-        output.sequences[i].index = i;
         output.sequences[i].chords = new Array(length);
         for (let s = 0; s < length; s++){
             let thisStep = $(thisSequence).find(".step")[s];
             let chordSelection = $(thisStep).find("#chord-sel")[0].value;
             let tensionSelection = $(thisStep).find(".tension-sel")[0].value;
-            output.sequences[i].chords[s] = output.pool[chordSelection].tension[tensionSelection];
+            output.sequences[i].chords[s] = {};
+            output.sequences[i].chords[s].index = chordSelection;
+            output.sequences[i].chords[s].tension = tensionSelection;
             let thisResult = $(thisStep).find("#result")[0];
             if(output.sequences[i].chords[s]){
-                $(thisResult).find(".result-name")[0].innerHTML =  output.sequences[i].chords[s].name;
-                $(thisResult).find(".result-notes")[0].innerHTML =  output.sequences[i].chords[s].notes;
+                $(thisResult).find(".result-name")[0].innerHTML =  output.pool[chordSelection].tension[tensionSelection].name;
+                $(thisResult).find(".result-notes")[0].innerHTML =  output.pool[chordSelection].tension[tensionSelection].notes;
             }
             //console.log($($(thisSequence).find(".step")[s]).find("#chord-sel")[0]);
         }
     }
 }
 
-function export_output(){
-    download(output, output.title + ".json", "application/json");
-}
+function updateMain(){
+   //INSTRUMENT INFO
+   octave = $("#octave")[0].value;
+   duration = $("#duration")[0].value;
+   
+   //COMP INFO
+   let title = $("#title")[0].value;
+   let root = $("#root")[0].value;
+   let key = $("#key")[0].value;
+   output.title = title;
+   output.root = root;
+   output.key = key;
+   if(key == "Maj") gradesList = Tonal.Key.majorKey(root).grades;
+   else if(key == "MinHarmonic")gradesList = Tonal.Key.minorKey(root).harmonic.grades;
+   else if(key == "MinMelodic")gradesList = Tonal.Key.minorKey(root).melodic.grades;
+   else if(key == "MinNatural")gradesList = Tonal.Key.minorKey(root).natural.grades;
 
-function download(content, fileName, contentType) {
-    var a = document.createElement("a");
-    var file = new Blob([JSON.stringify(content, null, 2)], {type: contentType});
-    a.href = URL.createObjectURL(file);
-    a.download = fileName;
-    a.click();
+}
+function updateValues(){
+    updateMain();
+    updateChords();
+    updateSequences();
 }
 
 function makeNoise(notes){
@@ -390,18 +394,77 @@ function matchGrades(){
         for(let i = $(".chord").length; i < gradesList.length; i++){
             let newChord = createChord();
             $(newChord).find(".grade-sel")[0].value = i;
-            //let tensions = $(newChord).find(".tension-sel");
-            //console.log(tensions);
-            //for(let t = 0; t < tensions.length; t++) tensions[t].value = alterationList[Number(Math.random() * alterationList.length).toFixed(0)];
             document.getElementById("chordsPool").appendChild(newChord);
         }
     }
     updateValues();
 }
+
 function randomAlterations(){
-    let tensions = $(".tension-sel");
-    for(let t = 2; t < tensions.length; t++) tensions[t].value = alterationList[Number((Math.random() * (alterationList.length -3)) + 2).toFixed(0)];
-    for(let t = 0; t < tensions.length; t+=4) tensions[t].value = alterationList[0];
-    for(let t = 1; t < tensions.length; t+=4) tensions[t].value = alterationList[1];
+    let tensions = $($("#chordsPool").find(".tension-sel"));
+    for(let t = 2; t < tensions.length; t++) tensions[t].value = Number((Math.random() * (alterationList.length -3)) + 2).toFixed(0);
+    for(let t = 0; t < tensions.length; t+=4) tensions[t].value = 0;
+    for(let t = 1; t < tensions.length; t+=4) tensions[t].value = 1;
     updateValues();     
+}
+
+function createFromJson(object){
+    output = object;
+    
+    //COMP INFO
+    $("#title")[0].value = output.title;
+    $("#root")[0].value = output.root;
+    $("#key")[0].value = output.key;
+    
+    let chordPool = $("#chordsPool");
+    chordPool.empty();
+    for(let i = 0; i < output.pool.length; i++){
+        let newChord = createChord();
+        $(newChord).find(".grade-sel")[0].value = output.pool[i].selection;
+        let tensions = $($(newChord).find(".tension-sel"));
+        for(let t = 0; t < output.pool[i].tension.length; t++){
+            tensions[t].value = output.pool[i].tension[t].selection;
+            console.log(output.pool[i].tension[t].selection);
+        }
+        document.getElementById("chordsPool").appendChild(newChord);
+    }
+    let sequencePool = $("#sequencesPool");
+    sequencePool.empty();
+    for(let i = 0; i < output.sequences.length; i++){
+        let newSequence = createSequence();
+        $(newSequence).find("#length")[0].value = output.sequences[i].chords.length;
+        for(let c = 0; c < output.sequences[i].chords.length; c++){
+            newSequence.appendChild(createSequenceStep(c, output.sequences[i].chords[c].index, output.sequences[i].chords[c].tension));
+        }
+        document.getElementById("sequencesPool").appendChild(newSequence);
+    }
+    updateValues();
+}
+
+
+function import_json(){
+	var files = document.getElementById('browse').files;
+    if (files.length <= 0) {
+      return false;
+    }
+    var fr = new FileReader();
+    fr.onload = function(e) {
+      var result = JSON.parse(e.target.result);
+      var formatted = JSON.stringify(result, null, 2);
+      console.log(result);
+      createFromJson(result);
+    }
+    fr.readAsText(files.item(0));
+}
+
+function export_json(){
+    download(output, output.title + ".json", "application/json");
+}
+
+function download(content, fileName, contentType) {
+    var a = document.createElement("a");
+    var file = new Blob([JSON.stringify(content, null, 2)], {type: contentType});
+    a.href = URL.createObjectURL(file);
+    a.download = fileName;
+    a.click();
 }
