@@ -35,7 +35,40 @@ function createSequence(){
     //titleDiv.appendChild(createPlaySeq());
     seqContainer.appendChild(titleDiv);
     seqContainer.appendChild(createRemoveButton("sequence"));
+    seqContainer.appendChild(createTagSystem());
     return seqContainer;
+}
+
+function createTagSystem(){
+    let tagContainer = document.createElement("div");
+    let label = document.createElement("label");
+    label.innerHTML = "Tag";
+    tagContainer.appendChild(label);
+    let textBox = document.createElement("input");
+    textBox.setAttribute("type", "textbox");
+    textBox.setAttribute("class", "tag-input");
+    $(textBox).keypress(function (e) {
+        if (e.which === 13) {
+            $($(this).parent().find(".tagPool"))[0].appendChild(newTag(this.value));
+            this.value = "";
+            updateValues();
+        }
+    });
+    tagContainer.appendChild(textBox);
+    let tagPool = document.createElement("div");
+    tagPool.setAttribute("class", "tagPool");
+    tagContainer.appendChild(tagPool);
+    return tagContainer;
+}
+
+function newTag(tagName){
+    let tagDiv = document.createElement("div");
+    let tag = document.createElement("label");
+    tag.setAttribute("class", "tag");
+    tag.innerHTML = tagName;
+    tagDiv.appendChild(tag);
+    tagDiv.appendChild(createRemoveButton());
+    return tagDiv;
 }
 
 function updateSequenceUI(sequenceElement){
@@ -284,7 +317,6 @@ function updateChords(){
     output.pool = new Array(allChords.length)
     let leadsheets = new Array(tensionLength);
 	for(let t = 0; t < tensionLength; t++) leadsheets[t] = Tonal.Progression.fromRomanNumerals(output.root, resultStrings[t]);
-    console.log(leadsheets[0]);
 	for(let i = 0; i < allChords.length; i++){
         output.pool[i] = {};
 		output.pool[i].selection = resultSelection[0][i].grade;
@@ -324,6 +356,12 @@ function updateSequences(){
         output.sequences[i] = {};
         output.sequences[i].chords = new Array(length);
         for (let s = 0; s < length; s++){
+            let allTags = $($(thisSequence).find(".tag"));
+            output.sequences[i].tag = new Array(allTags.length);
+            for(let t = 0; t < allTags.length; t++){
+                output.sequences[i].tag[t] = allTags[t].innerHTML;
+            }
+            console.log(output.sequences[i].tag)
             let thisStep = $(thisSequence).find(".step")[s];
             let chordSelection = $(thisStep).find("#chord-sel")[0].value;
             let tensionSelection = $(thisStep).find(".tension-sel")[0].value;
@@ -372,7 +410,7 @@ function makeNoise(notes){
         Synth.setSampleRate(44100); // sets sample rate to 20000Hz
         Synth.setVolume(0.1337); // even better.
         let note = Tonal.Midi.midiToNoteName(notes[i], { pitchClass: true, sharps: true });
-        console.log(note);
+        //console.log(note);
         Synth.play("piano", note, octave, duration);
         piano.setNoteDown(note, 0);
         lastPlayedChord[i] = {};
@@ -383,7 +421,7 @@ function makeNoise(notes){
 
 function play(id, t) {
     let notes =  [];
-    console.log("id: " + id + " t: " + t);
+    //console.log("id: " + id + " t: " + t);
    
     notes = output.pool[id].tension[t].notes;
     makeNoise(notes);
@@ -424,7 +462,6 @@ function createFromJson(object){
         let tensions = $($(newChord).find(".tension-sel"));
         for(let t = 0; t < output.pool[i].tension.length; t++){
             tensions[t].value = output.pool[i].tension[t].selection;
-            console.log(output.pool[i].tension[t].selection);
         }
         document.getElementById("chordsPool").appendChild(newChord);
     }
@@ -435,6 +472,10 @@ function createFromJson(object){
         $(newSequence).find("#length")[0].value = output.sequences[i].chords.length;
         for(let c = 0; c < output.sequences[i].chords.length; c++){
             newSequence.appendChild(createSequenceStep(c, output.sequences[i].chords[c].index, output.sequences[i].chords[c].tension));
+            
+        }
+        for(let t = 0; t < output.sequences[i].tag.length; t++){
+            $(newSequence).find(".tagPool")[0].appendChild(newTag(output.sequences[i].tag[t]));
         }
         document.getElementById("sequencesPool").appendChild(newSequence);
     }
@@ -451,7 +492,6 @@ function import_json(){
     fr.onload = function(e) {
       var result = JSON.parse(e.target.result);
       var formatted = JSON.stringify(result, null, 2);
-      console.log(result);
       createFromJson(result);
     }
     fr.readAsText(files.item(0));
