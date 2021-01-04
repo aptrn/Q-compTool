@@ -1,59 +1,30 @@
-.title{
-    display: inline-flex;
-}
-#pool {
-    margin-left: 1%;
-}
-#chordsPool  {
-    display: flex;
-}
-#piano-container{
-    display: flex;
-    width:10%;
-}
-.result-name{
-    display: flex;
-    padding: 1%;
-}
-.result-notes{
-    display: flex;
-    padding: 1%;
-}
-.play-chord{
-    display: inline-flex;
-}
-.chord {
-    display: block;
-    padding: 2%;
-    width: 20%;
-    border: 3px;
+.chord{
+    margin: 2rem;
+    padding: 3px;
     border-style: solid;
     border-color: aqua;
 }
-.chord:hover {
-    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
-  }
-.sequencesPool {
-    display: grid;
-}
+
 .sequence{
-    display: table-row;
+    margin: 2rem;
+    padding: 3px;
+    border-style: solid;
+    border-color: blueviolet;
 }
-.step {
-    display: flex;
-    padding: 2;
+
+.step{
+    margin: 2px;
+    padding: 3px;
+    border-style: solid;
+    border-color: aqua;
 }
-.alteration-pool {
-    display: flex;
-    padding: 2%;
-    width: 2%;
+
+#main-title{
+    font-size: 50;
+    margin-left: 20px;
 }
-#sequences {
-    display: flow-root;
-    width: 100%;
-}
-#info {
-    display: inline;
-    padding: 20;
-    margin: 20%;
+
+#comp{
+    margin-left: 40px;
+    margin-right: 40px;
 }

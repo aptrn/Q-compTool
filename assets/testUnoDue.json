@@ -1,0 +1,319 @@
+{
+  "title": "testUnoDue",
+  "root": "C",
+  "key": "major",
+  "pool": [
+    {
+      "selection": "0",
+      "tension": [
+        {
+          "selection": "0",
+          "name": "C major",
+          "notes": [
+            0,
+            4,
+            7
+          ]
+        },
+        {
+          "selection": "1",
+          "name": "C minor",
+          "notes": [
+            0,
+            3,
+            7
+          ]
+        },
+        {
+          "selection": "0",
+          "name": "C major",
+          "notes": [
+            0,
+            4,
+            7
+          ]
+        },
+        {
+          "selection": "0",
+          "name": "C major",
+          "notes": [
+            0,
+            4,
+            7
+          ]
+        }
+      ]
+    },
+    {
+      "selection": "2",
+      "tension": [
+        {
+          "selection": "1",
+          "name": "E minor",
+          "notes": [
+            4,
+            7,
+            11
+          ]
+        },
+        {
+          "selection": "0",
+          "name": "E major",
+          "notes": [
+            4,
+            8,
+            11
+          ]
+        },
+        {
+          "selection": "0",
+          "name": "E major",
+          "notes": [
+            4,
+            8,
+            11
+          ]
+        },
+        {
+          "selection": "0",
+          "name": "E major",
+          "notes": [
+            4,
+            8,
+            11
+          ]
+        }
+      ]
+    },
+    {
+      "selection": "2",
+      "tension": [
+        {
+          "selection": "1",
+          "name": "E minor",
+          "notes": [
+            4,
+            7,
+            11
+          ]
+        },
+        {
+          "selection": "0",
+          "name": "E major",
+          "notes": [
+            4,
+            8,
+            11
+          ]
+        },
+        {
+          "selection": "0",
+          "name": "E major",
+          "notes": [
+            4,
+            8,
+            11
+          ]
+        },
+        {
+          "selection": "0",
+          "name": "E major",
+          "notes": [
+            4,
+            8,
+            11
+          ]
+        }
+      ]
+    },
+    {
+      "selection": "3",
+      "tension": [
+        {
+          "selection": "0",
+          "name": "F major",
+          "notes": [
+            5,
+            9,
+            0
+          ]
+        },
+        {
+          "selection": "0",
+          "name": "F major",
+          "notes": [
+            5,
+            9,
+            0
+          ]
+        },
+        {
+          "selection": "0",
+          "name": "F major",
+          "notes": [
+            5,
+            9,
+            0
+          ]
+        },
+        {
+          "selection": "0",
+          "name": "F major",
+          "notes": [
+            5,
+            9,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "selection": "4",
+      "tension": [
+        {
+          "selection": "0",
+          "name": "G major",
+          "notes": [
+            7,
+            11,
+            2
+          ]
+        },
+        {
+          "selection": "0",
+          "name": "G major",
+          "notes": [
+            7,
+            11,
+            2
+          ]
+        },
+        {
+          "selection": "0",
+          "name": "G major",
+          "notes": [
+            7,
+            11,
+            2
+          ]
+        },
+        {
+          "selection": "0",
+          "name": "G major",
+          "notes": [
+            7,
+            11,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "selection": "5",
+      "tension": [
+        {
+          "selection": "1",
+          "name": "A minor",
+          "notes": [
+            9,
+            0,
+            4
+          ]
+        },
+        {
+          "selection": "0",
+          "name": "A major",
+          "notes": [
+            9,
+            1,
+            4
+          ]
+        },
+        {
+          "selection": "0",
+          "name": "A major",
+          "notes": [
+            9,
+            1,
+            4
+          ]
+        },
+        {
+          "selection": "0",
+          "name": "A major",
+          "notes": [
+            9,
+            1,
+            4
+          ]
+        }
+      ]
+    },
+    {
+      "selection": "6",
+      "tension": [
+        {
+          "selection": "2",
+          "name": "B diminished",
+          "notes": [
+            11,
+            2,
+            5
+          ]
+        },
+        {
+          "selection": "0",
+          "name": "B major",
+          "notes": [
+            11,
+            3,
+            6
+          ]
+        },
+        {
+          "selection": "0",
+          "name": "B major",
+          "notes": [
+            11,
+            3,
+            6
+          ]
+        },
+        {
+          "selection": "0",
+          "name": "B major",
+          "notes": [
+            11,
+            3,
+            6
+          ]
+        }
+      ]
+    }
+  ],
+  "sequences": [
+    {
+      "chords": [
+        {
+          "index": "3",
+          "tension": "0"
+        },
+        {
+          "index": "0",
+          "tension": "0"
+        },
+        {
+          "index": "0",
+          "tension": "0"
+        },
+        {
+          "index": "0",
+          "tension": "0"
+        }
+      ],
+      "tag": [
+        "yo!"
+      ]
+    }
+  ]
+}

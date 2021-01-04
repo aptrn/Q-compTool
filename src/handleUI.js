@@ -21,6 +21,11 @@ $(".addSequence").click(function() {
     document.getElementById("sequencesPool").appendChild(createSequence());
     updateValues();
 });
+$("input").keypress(function (e) {
+    if (e.which === 13) {
+        e.preventDefault();
+    }
+});
 
 $("#comp").submit(function(e){
     return false;
@@ -29,15 +34,27 @@ $("#comp").submit(function(e){
 
 function createSequence(){
     let seqContainer = document.createElement("div");
-    seqContainer.setAttribute("class", "sequence");
+    seqContainer.setAttribute("class", "sequence row");
     let titleDiv = document.createElement("div");
-    titleDiv.setAttribute("class", "title");
-    titleDiv.appendChild(createIndexLabel(0));
-    titleDiv.appendChild(createLenghtSelector());
+    titleDiv.setAttribute("class", "title row col");
+    let indexLabel = createIndexLabel(0);
+    indexLabel.setAttribute("class", "col")
+    titleDiv.appendChild(indexLabel);
+    let lenghtSel = createLenghtSelector();
+    lenghtSel.setAttribute("class", "col");
+    titleDiv.appendChild(lenghtSel);
     //titleDiv.appendChild(createPlaySeq());
     seqContainer.appendChild(titleDiv);
-    seqContainer.appendChild(createRemoveButton("sequence"));
-    seqContainer.appendChild(createTagSystem());
+    let remove = createRemoveButton("sequence");
+    remove.setAttribute("class", "col");
+    seqContainer.appendChild(remove);
+    let tags = createTagSystem();
+    tags.setAttribute("class", "row whole-tag");
+    seqContainer.appendChild(tags);
+
+    let stepsPool = document.createElement("div");
+    stepsPool.setAttribute("class", "stepsPool row");
+    seqContainer.appendChild(stepsPool);
     return seqContainer;
 }
 
@@ -51,25 +68,28 @@ function createTagSystem(){
     textBox.setAttribute("class", "tag-input");
     $(textBox).keypress(function (e) {
         if (e.which === 13) {
+            e.preventDefault();
             $($(this).parent().find(".tagPool"))[0].appendChild(newTag(this.value));
             this.value = "";
-            updateValues();
         }
     });
     tagContainer.appendChild(textBox);
     let tagPool = document.createElement("div");
-    tagPool.setAttribute("class", "tagPool");
+    tagPool.setAttribute("class", "tagPool row");
     tagContainer.appendChild(tagPool);
     return tagContainer;
 }
 
 function newTag(tagName){
     let tagDiv = document.createElement("div");
+    tagDiv.setAttribute("class", "col")
     let tag = document.createElement("label");
-    tag.setAttribute("class", "tag");
+    tag.setAttribute("class", "tag col");
     tag.innerHTML = tagName;
     tagDiv.appendChild(tag);
-    tagDiv.appendChild(createRemoveButton());
+    let remove = createRemoveButton("tag");
+    remove.setAttribute("class", "col");
+    tagDiv.appendChild(remove);
     return tagDiv;
 }
 
@@ -80,7 +100,7 @@ function updateSequenceUI(sequenceElement){
     if(actualLength == null || actualLength == undefined) actualLength = 0;
     if(actualLength < length){
         for(let i = actualLength; i < length; i++){
-            sequenceElement.appendChild(createSequenceStep(i));
+            $(sequenceElement).find(".stepsPool")[0].appendChild(createSequenceStep(i));
         }
     }
     if(actualLength > length){
@@ -123,7 +143,7 @@ function createPlaySeq(){
 
 function createSequenceStep(index, chordSel, tensionSel){
     let stepContainer = document.createElement("div");
-    stepContainer.setAttribute("class", "step");
+    stepContainer.setAttribute("class", "step col-md-1");
     stepContainer.appendChild(createIndexLabel(index));
     stepContainer.appendChild(createChordSelector(chordSel));
     stepContainer.appendChild(createTensionSelector(tensionSel));
@@ -196,13 +216,17 @@ function createLenghtSelector(){
 
 function createChord(){
     let chordContainer = document.createElement("div");
-    chordContainer.setAttribute("class", "chord");
-    chordContainer.appendChild(createIndexLabel(0));
-    chordContainer.appendChild(createRemoveButton("chord"));
+    chordContainer.setAttribute("class", "chord fluid-container row col-md-3");
+    let index = createIndexLabel(0);
+    index.setAttribute("class", "index col-md-4");
+    chordContainer.appendChild(index);
+    let remove = createRemoveButton("chord");
+    remove.setAttribute("class", "col-md-7");
+    chordContainer.appendChild(remove);
     chordContainer.appendChild(createGradeSelector());
     for(let t = 0; t < tensionLength; t++){
         chordContainer.appendChild(createAlterationSelector(t));
-        chordContainer.appendChild(createPlayButton(t));
+        
     }
     return chordContainer;
 }
@@ -222,11 +246,13 @@ function createResultLabel(){
 
 function createGradeSelector(){
     let gradeContainer = document.createElement("div");
+    gradeContainer.setAttribute("class", "row");
     let label = document.createElement("label");
+    label.setAttribute("class", "col");
     label.innerHTML = "Grade";
     gradeContainer.appendChild(label);
     let select = document.createElement("select");
-    select.setAttribute("class", "grade-sel");
+    select.setAttribute("class", "grade-sel col-auto");
     for(let i = 0; i < gradesList.length; i++){
         let option = document.createElement("option");
         option.value = i;
@@ -242,13 +268,13 @@ function createGradeSelector(){
 
 function createAlterationSelector(index){
     let tensionContainer = document.createElement("div");
-    tensionContainer.setAttribute("class", "alteration-pool")
+    tensionContainer.setAttribute("class", "alteration-pool row")
     let label = document.createElement("label");
-    label.setAttribute("class", "tension-label");
+    label.setAttribute("class", "tension-label col-md-2");
     label.innerHTML = "T" + index;
     tensionContainer.appendChild(label);
     let select = document.createElement("select");
-    select.setAttribute("class","tension-sel");
+    select.setAttribute("class","tension-sel col-md-4");
     for(let i = 0; i < modalAlterationList.length; i++){
         let option = document.createElement("option");
         option.value = i;
@@ -259,7 +285,12 @@ function createAlterationSelector(index){
         updateValues();
     });
     tensionContainer.appendChild(select);
-    tensionContainer.appendChild(createResult());
+    let res = createResult();
+    res.setAttribute("class", "col-md-4")
+    tensionContainer.appendChild(res);
+    let play = createPlayButton(index);
+    play.setAttribute("class", "col-md-2")
+    tensionContainer.appendChild(play);
     return tensionContainer;
 }
 
@@ -269,9 +300,9 @@ function createResult(){
     let nameLabel = document.createElement("label");
     nameLabel.setAttribute("class", "result-name");
     resultDiv.appendChild(nameLabel);
-    let noteLabel = document.createElement("label");
-    noteLabel.setAttribute("class", "result-notes");
-    resultDiv.appendChild(noteLabel);
+    //let noteLabel = document.createElement("label");
+    //noteLabel.setAttribute("class", "result-notes");
+    //resultDiv.appendChild(noteLabel);
     return resultDiv;
 }
 
@@ -292,7 +323,7 @@ function createPlayButton(tension){
     playButton.innerHTML = "Play";
     playButton.tension = tension;
     $(playButton).click(function () {
-        let id = $(this).parent()[0].index;
+        let id = $($(this).parent()).parent()[0].index;
         play(id, this.tension);
         return false;
     });
@@ -339,7 +370,7 @@ function updateChords(){
 			output.pool[i].tension[t].name = resultChord.name;
             output.pool[i].tension[t].notes = resultChord.notes.map(Tonal.Note.chroma);
             $(allChords[i]).find(".result-name")[t].innerHTML = output.pool[i].tension[t].name ;
-            $(allChords[i]).find(".result-notes")[t].innerHTML = String(output.pool[i].tension[t].notes);
+            //$(allChords[i]).find(".result-notes")[t].innerHTML = String(output.pool[i].tension[t].notes);
             let gradeSelectors = $(allChords[i]).find(".grade-sel");
             for(let s = 0; s < gradeSelectors.length; s++){
                 let oldValue = gradeSelectors[s].value;
@@ -379,9 +410,9 @@ function updateSequences(){
             output.sequences[i].chords[s].index = chordSelection;
             output.sequences[i].chords[s].tension = tensionSelection;
             let thisResult = $(thisStep).find("#result")[0];
-            if(output.sequences[i].chords[s]){
+            if(output.pool[chordSelection] != undefined){
                 $(thisResult).find(".result-name")[0].innerHTML =  output.pool[chordSelection].tension[tensionSelection].name;
-                $(thisResult).find(".result-notes")[0].innerHTML =  output.pool[chordSelection].tension[tensionSelection].notes;
+                //$(thisResult).find(".result-notes")[0].innerHTML =  output.pool[chordSelection].tension[tensionSelection].notes;
             }
             //console.log($($(thisSequence).find(".step")[s]).find("#chord-sel")[0]);
         }
@@ -543,8 +574,7 @@ function createFromJson(object){
         let newSequence = createSequence();
         $(newSequence).find("#length")[0].value = output.sequences[i].chords.length;
         for(let c = 0; c < output.sequences[i].chords.length; c++){
-            newSequence.appendChild(createSequenceStep(c, output.sequences[i].chords[c].index, output.sequences[i].chords[c].tension));
-            
+            $(newSequence).find(".stepsPool")[0].appendChild(createSequenceStep(c, output.sequences[i].chords[c].index, output.sequences[i].chords[c].tension));
         }
         for(let t = 0; t < output.sequences[i].tag.length; t++){
             $(newSequence).find(".tagPool")[0].appendChild(newTag(output.sequences[i].tag[t]));
