@@ -2,6 +2,8 @@ let tensionLength = 4;
 let gradesList = [];
 let alterationList = ["","m", "°", "aug", "6", "m6", "7","m7","9","m9","11","m11","sus2","sus4"];
 let alterationListPretty = ["Major","Minor", "Diminished", "Augmented", "Sixth", "Minor Sixth", "Seventh","Minor Seventh","Ninth","Minor Ninth","Eleventh","Minor Eleventh","Suspended Second","Suspended Fourth"];
+let modalAlterationList = [];
+let isModal = false;
 let output = {};
 let iter = 0;
 let select = 0;
@@ -247,10 +249,10 @@ function createAlterationSelector(index){
     tensionContainer.appendChild(label);
     let select = document.createElement("select");
     select.setAttribute("class","tension-sel");
-    for(let i = 0; i < alterationList.length; i++){
+    for(let i = 0; i < modalAlterationList.length; i++){
         let option = document.createElement("option");
         option.value = i;
-        option.innerHTML = alterationListPretty[i];
+        option.innerHTML = modalAlterationList[i];
         select.appendChild(option);
     }
     $(select).on('input', function(){
@@ -297,7 +299,6 @@ function createPlayButton(tension){
     return playButton;
 }
 function updateChords(){
-
     //POOL
     let allChords = $(".chord");
     let resultStrings = new Array(tensionLength);
@@ -311,18 +312,28 @@ function updateChords(){
             resultSelection[t][i] = {};
             resultSelection[t][i].grade = $(allChords[i]).find(".grade-sel")[0].value;
             resultSelection[t][i].tension = $(allChords[i]).find(".tension-sel")[t].value;
-            resultStrings[t][i] = gradesList[resultSelection[t][i].grade] + alterationList[resultSelection[t][i].tension];
+            resultStrings[t][i] = gradesList[resultSelection[t][i].grade] + modalAlterationList[resultSelection[t][i].tension];
         }
     }
     output.pool = new Array(allChords.length)
     let leadsheets = new Array(tensionLength);
-	for(let t = 0; t < tensionLength; t++) leadsheets[t] = Tonal.Progression.fromRomanNumerals(output.root, resultStrings[t]);
+    /*
+    if(!isModal) for(let t = 0; t < tensionLength; t++) leadsheets[t] = Tonal.Progression.fromRomanNumerals(output.root, resultStrings[t]);
+    else {
+        leadsheets = resultStrings;
+        for (let t = 0; t < tensionLength; t++) {
+            for (let i = 0; i < resultStrings[t].length; i++){
+               // leadsheets[t][i] = resultStrings[t
+            }
+        }
+    }
+    */
 	for(let i = 0; i < allChords.length; i++){
         output.pool[i] = {};
 		output.pool[i].selection = resultSelection[0][i].grade;
 		output.pool[i].tension = new Array(tensionLength);
 		for(let t = 0; t < tensionLength; t++){
-            let resultChord = Tonal.Chord.get(leadsheets[t][i]);
+            let resultChord = Tonal.Chord.get(resultStrings[t][i]);
             output.pool[i].tension[t] = {};
 		    output.pool[i].tension[t].selection = resultSelection[t][i].tension;
 			output.pool[i].tension[t].name = resultChord.name;
@@ -377,23 +388,55 @@ function updateSequences(){
     }
 }
 
-function updateMain(){
-   //INSTRUMENT INFO
-   octave = $("#octave")[0].value;
-   duration = $("#duration")[0].value;
-   
-   //COMP INFO
-   let title = $("#title")[0].value;
-   let root = $("#root")[0].value;
-   let key = $("#key")[0].value;
-   output.title = title;
-   output.root = root;
-   output.key = key;
-   if(key == "Maj") gradesList = Tonal.Key.majorKey(root).grades;
-   else if(key == "MinHarmonic")gradesList = Tonal.Key.minorKey(root).harmonic.grades;
-   else if(key == "MinMelodic")gradesList = Tonal.Key.minorKey(root).melodic.grades;
-   else if(key == "MinNatural")gradesList = Tonal.Key.minorKey(root).natural.grades;
+function getModeAlterations(string){
+    let allAlterations = Tonal.Mode.triads(string, output.root);
+    let out = new Array(allAlterations.length);
+    for(let i = 0; i < allAlterations.length; i++){
+        out[i] =  Tonal.Chord.get(allAlterations[i]).aliases[0];
+    }
+    return out;
+}
 
+function updateMain(){
+    //INSTRUMENT INFO
+    octave = $("#octave")[0].value;
+    duration = $("#duration")[0].value;
+
+    //COMP INFO
+    output.title  = $("#title")[0].value;
+    output.root = $("#root")[0].value;
+    output.key = $("#key")[0].value;
+
+    modalAlterationList = [];
+
+    if(output.key == "major"){ 
+        isModal = false;
+        gradesList = Tonal.Key.majorKey(output.root).scale; 
+        modalAlterationList = getModeAlterations("major");
+    }
+    else if(output.key == "harmonic"){ 
+        isModal = false;
+        gradesList = Tonal.Key.minorKey(output.root).harmonic.scale;
+        modalAlterationList = getModeAlterations("minor");
+    }
+    else if(output.key == "melodic"){ 
+        isModal = false;
+        gradesList = Tonal.Key.minorKey(output.root).melodic.scale;
+        modalAlterationList = getModeAlterations("minor");
+    }
+    else if(output.key == "natural"){ 
+        isModal = false;
+        gradesList = Tonal.Key.minorKey(output.root).natural.scale;
+        modalAlterationList = getModeAlterations("minor");
+    }
+    else {
+        isModal = true;
+        gradesList = Tonal.Mode.notes(output.key, output.root);
+        modalAlterationList = getModeAlterations(output.key);
+    }
+    let others = Tonal.Scale.scaleChords(output.key);
+    modalAlterationList = [].concat(modalAlterationList, others);
+    modalAlterationList = Array.from(new Set(modalAlterationList));
 }
 function updateValues(){
     updateMain();
@@ -427,13 +470,31 @@ function play(id, t) {
 }
 
 function matchGrades(){
-    if($(".chord").length < gradesList.length){
-        for(let i = $(".chord").length; i < gradesList.length; i++){
-            let newChord = createChord();
-            $(newChord).find(".grade-sel")[0].value = i;
-            document.getElementById("chordsPool").appendChild(newChord);
+
+    updateMain();
+    $("#chordsPool").empty(); 
+    let ciao = [];
+    //console.log(modalAlterationList);
+    for(let i = $(".chord").length; i < gradesList.length; i++){
+        let newChord = createChord();
+        $(newChord).find(".grade-sel")[0].value = i;
+        if(isModal){
+            $(newChord).find(".tension-sel")[0].value = modalAlterationList.indexOf(getModeAlterations(output.key)[i]);
+            //alteration = Tonal.Chord.getChord(Tonal.Mode.seventhChords(output.key, output.root)[i]).aliases[0];
+            //$(newChord).find(".tension-sel")[1].value = modalAlterationList.indexOf(alteration);
         }
+        else{
+            let alt;
+            if(output.key == "major") alt = getModeAlterations("major"); 
+            else if(output.key == "harmonic") alt = getModeAlterations("minor"); 
+            else if(output.key == "melodic") alt = getModeAlterations("minor"); 
+            else if(output.key == "natural") alt = getModeAlterations("minor"); 
+            $(newChord).find(".tension-sel")[0].value = modalAlterationList.indexOf(alt[i]);
+        }
+
+        document.getElementById("chordsPool").appendChild(newChord);
     }
+    
     updateValues();
 }
 
