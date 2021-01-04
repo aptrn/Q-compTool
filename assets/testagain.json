@@ -1,0 +1,92 @@
+{
+  "title": "testagain",
+  "root": "C",
+  "key": "major",
+  "pool": [
+    {
+      "selection": "C",
+      "tension": [
+        {
+          "selection": "M",
+          "name": "C major",
+          "notes": [
+            0,
+            4,
+            7
+          ]
+        },
+        {
+          "selection": "m",
+          "name": "C minor",
+          "notes": [
+            0,
+            3,
+            7
+          ]
+        },
+        {
+          "selection": "6/9",
+          "name": "C sixth/ninth",
+          "notes": [
+            0,
+            4,
+            7,
+            9,
+            2
+          ]
+        },
+        {
+          "selection": "6",
+          "name": "C sixth",
+          "notes": [
+            0,
+            4,
+            7,
+            9
+          ]
+        }
+      ]
+    },
+    {
+      "selection": "E",
+      "tension": [
+        {
+          "selection": "M",
+          "name": "E major",
+          "notes": [
+            4,
+            8,
+            11
+          ]
+        },
+        {
+          "selection": "m",
+          "name": "E minor",
+          "notes": [
+            4,
+            7,
+            11
+          ]
+        },
+        {
+          "selection": "5",
+          "name": "E fifth",
+          "notes": [
+            4,
+            11
+          ]
+        },
+        {
+          "selection": "sus4",
+          "name": "E suspended fourth",
+          "notes": [
+            4,
+            9,
+            11
+          ]
+        }
+      ]
+    }
+  ],
+  "sequences": []
+}

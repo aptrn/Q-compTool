@@ -361,12 +361,12 @@ function updateChords(){
     */
 	for(let i = 0; i < allChords.length; i++){
         output.pool[i] = {};
-		output.pool[i].selection = resultSelection[0][i].grade;
+		output.pool[i].selection = gradesList[resultSelection[0][i].grade];
 		output.pool[i].tension = new Array(tensionLength);
 		for(let t = 0; t < tensionLength; t++){
             let resultChord = Tonal.Chord.get(resultStrings[t][i]);
             output.pool[i].tension[t] = {};
-		    output.pool[i].tension[t].selection = resultSelection[t][i].tension;
+		    output.pool[i].tension[t].selection = modalAlterationList[resultSelection[t][i].tension];
 			output.pool[i].tension[t].name = resultChord.name;
             output.pool[i].tension[t].notes = resultChord.notes.map(Tonal.Note.chroma);
             $(allChords[i]).find(".result-name")[t].innerHTML = output.pool[i].tension[t].name ;
@@ -556,15 +556,16 @@ function createFromJson(object){
     $("#title")[0].value = output.title;
     $("#root")[0].value = output.root;
     $("#key")[0].value = output.key;
-    
+    updateMain();
+
     let chordPool = $("#chordsPool");
     chordPool.empty();
     for(let i = 0; i < output.pool.length; i++){
         let newChord = createChord();
-        $(newChord).find(".grade-sel")[0].value = output.pool[i].selection;
+        $(newChord).find(".grade-sel")[0].value = gradesList.indexOf(output.pool[i].selection);
         let tensions = $($(newChord).find(".tension-sel"));
         for(let t = 0; t < output.pool[i].tension.length; t++){
-            tensions[t].value = output.pool[i].tension[t].selection;
+            tensions[t].value = modalAlterationList.indexOf(output.pool[i].tension[t].selection);
         }
         document.getElementById("chordsPool").appendChild(newChord);
     }
