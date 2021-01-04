@@ -389,10 +389,26 @@ function updateSequences(){
 }
 
 function getModeAlterations(string){
-    let allAlterations = Tonal.Mode.triads(string, output.root);
-    let out = new Array(allAlterations.length);
-    for(let i = 0; i < allAlterations.length; i++){
-        out[i] =  Tonal.Chord.get(allAlterations[i]).aliases[0];
+    let out = [];
+    if(string != "melodic minor" && string != "natural minor" && string != "harmonic minor" ){
+        out = Tonal.Mode.triads(string);
+        //out = new Array(allAlterations.length);
+        for(let i = 0; i < out.length; i++){
+            if(out[i] == "") out[i] = "M";
+        }
+    }
+    else{
+        let allAlterations = [];
+        if(string != "minor"){
+            let res = Tonal.Key.minorKey(output.root);
+            if(string == "harmonic minor") allAlterations = res.harmonic.chords;
+            else if(string == "melodic minor") allAlterations = res.melodic.chords;
+            else if(string == "natural minor") allAlterations = res.natural.chords;
+            out = new Array(allAlterations.length);
+            for(let i = 0; i < allAlterations.length; i++){
+                out[i] =  Tonal.Chord.get(allAlterations[i]).aliases[0];
+            }
+        }
     }
     return out;
 }
@@ -414,20 +430,20 @@ function updateMain(){
         gradesList = Tonal.Key.majorKey(output.root).scale; 
         modalAlterationList = getModeAlterations("major");
     }
-    else if(output.key == "harmonic"){ 
+    else if(output.key == "harmonic minor"){ 
         isModal = false;
         gradesList = Tonal.Key.minorKey(output.root).harmonic.scale;
-        modalAlterationList = getModeAlterations("minor");
+        modalAlterationList = [].concat(getModeAlterations("harmonic minor"), getModeAlterations("minor"));
     }
-    else if(output.key == "melodic"){ 
+    else if(output.key == "melodic minor"){ 
         isModal = false;
         gradesList = Tonal.Key.minorKey(output.root).melodic.scale;
-        modalAlterationList = getModeAlterations("minor");
+        modalAlterationList = [].concat(getModeAlterations("melodic minor"), getModeAlterations("minor"));
     }
-    else if(output.key == "natural"){ 
+    else if(output.key == "natural minor"){ 
         isModal = false;
         gradesList = Tonal.Key.minorKey(output.root).natural.scale;
-        modalAlterationList = getModeAlterations("minor");
+        modalAlterationList = [].concat(getModeAlterations("natural minor"), getModeAlterations("minor"));
     }
     else {
         isModal = true;
@@ -473,22 +489,18 @@ function matchGrades(){
 
     updateMain();
     $("#chordsPool").empty(); 
-    let ciao = [];
-    //console.log(modalAlterationList);
     for(let i = $(".chord").length; i < gradesList.length; i++){
         let newChord = createChord();
         $(newChord).find(".grade-sel")[0].value = i;
         if(isModal){
             $(newChord).find(".tension-sel")[0].value = modalAlterationList.indexOf(getModeAlterations(output.key)[i]);
-            //alteration = Tonal.Chord.getChord(Tonal.Mode.seventhChords(output.key, output.root)[i]).aliases[0];
-            //$(newChord).find(".tension-sel")[1].value = modalAlterationList.indexOf(alteration);
         }
         else{
-            let alt;
-            if(output.key == "major") alt = getModeAlterations("major"); 
-            else if(output.key == "harmonic") alt = getModeAlterations("minor"); 
-            else if(output.key == "melodic") alt = getModeAlterations("minor"); 
-            else if(output.key == "natural") alt = getModeAlterations("minor"); 
+            let alt = getModeAlterations(output.key);
+            //if(output.key == "major") alt = getModeAlterations("major"); 
+            //else if(output.key == "harmonic minor") alt = getModeAlterations("minor"); 
+            //else if(output.key == "melodic minor") alt = getModeAlterations("minor"); 
+            //else if(output.key == "natural minor") alt = getModeAlterations("minor"); 
             $(newChord).find(".tension-sel")[0].value = modalAlterationList.indexOf(alt[i]);
         }
 
