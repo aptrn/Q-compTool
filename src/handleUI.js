@@ -5,6 +5,7 @@ let alterationListPretty = ["Major","Minor", "Diminished", "Augmented", "Sixth",
 let modalAlterationList = [];
 let isModal = false;
 let output = {};
+output.root = 'C';
 let iter = 0;
 let select = 0;
 let time = 3000;
@@ -146,7 +147,7 @@ function createSequenceStep(index, chordSel, tensionSel){
     stepContainer.setAttribute("class", "step col-md-1");
     stepContainer.appendChild(createIndexLabel(index));
     stepContainer.appendChild(createChordSelector(chordSel));
-    stepContainer.appendChild(createTensionSelector(tensionSel));
+    //stepContainer.appendChild(createTensionSelector(tensionSel));
     stepContainer.appendChild(createResult());
     return stepContainer;
 }
@@ -201,7 +202,7 @@ function createLenghtSelector(){
     lengthContainer.appendChild(label);
     let select = document.createElement("select");
     select.id = "length";
-    for(let i = 0; i < 8; i++){
+    for(let i = 0; i < 16; i++){
         let option = document.createElement("option");
         option.value = i + 1;
         option.innerHTML = i + 1    ;
@@ -405,13 +406,13 @@ function updateSequences(){
             }
             let thisStep = $(thisSequence).find(".step")[s];
             let chordSelection = $(thisStep).find("#chord-sel")[0].value;
-            let tensionSelection = $(thisStep).find(".tension-sel")[0].value;
+            //let tensionSelection = $(thisStep).find(".tension-sel")[0].value;
             output.sequences[i].chords[s] = {};
             output.sequences[i].chords[s].index = chordSelection;
-            output.sequences[i].chords[s].tension = tensionSelection;
+            //output.sequences[i].chords[s].tension = tensionSelection;
             let thisResult = $(thisStep).find("#result")[0];
             if(output.pool[chordSelection] != undefined){
-                $(thisResult).find(".result-name")[0].innerHTML =  output.pool[chordSelection].tension[tensionSelection].name;
+                //$(thisResult).find(".result-name")[0].innerHTML =  output.pool[chordSelection].tension[tensionSelection].name;
                 //$(thisResult).find(".result-notes")[0].innerHTML =  output.pool[chordSelection].tension[tensionSelection].notes;
             }
             //console.log($($(thisSequence).find(".step")[s]).find("#chord-sel")[0]);
@@ -451,7 +452,7 @@ function updateMain(){
 
     //COMP INFO
     output.title  = $("#title")[0].value;
-    output.root = $("#root")[0].value;
+    output.root = 'C';
     output.key = $("#key")[0].value;
 
     modalAlterationList = [];
@@ -554,7 +555,7 @@ function createFromJson(object){
     
     //COMP INFO
     $("#title")[0].value = output.title;
-    $("#root")[0].value = output.root;
+    //$("#root")[0].value = 'C';
     $("#key")[0].value = output.key;
     updateMain();
 
@@ -575,7 +576,8 @@ function createFromJson(object){
         let newSequence = createSequence();
         $(newSequence).find("#length")[0].value = output.sequences[i].chords.length;
         for(let c = 0; c < output.sequences[i].chords.length; c++){
-            $(newSequence).find(".stepsPool")[0].appendChild(createSequenceStep(c, output.sequences[i].chords[c].index, output.sequences[i].chords[c].tension));
+            console.log(output.sequences[i]);
+            $(newSequence).find(".stepsPool")[0].appendChild(createSequenceStep(c, output.sequences[i].chords[c].index, 0));
         }
         for(let t = 0; t < output.sequences[i].tag.length; t++){
             $(newSequence).find(".tagPool")[0].appendChild(newTag(output.sequences[i].tag[t]));
