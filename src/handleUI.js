@@ -12,7 +12,12 @@ let time = 3000;
 let lastPlayedChord = [];
 let octave = 3;
 let duration = 4;
+addFirstSequence();
 
+function addFirstSequence(){
+    document.getElementById("sequencesPool").appendChild(createSequence());
+    updateValues();
+}
 $(".addChord").click(function() {
     document.getElementById("chordsPool").appendChild(createChord());
     updateValues();
@@ -46,9 +51,9 @@ function createSequence(){
     titleDiv.appendChild(lenghtSel);
     //titleDiv.appendChild(createPlaySeq());
     seqContainer.appendChild(titleDiv);
-    let remove = createRemoveButton("sequence");
-    remove.setAttribute("class", "col");
-    seqContainer.appendChild(remove);
+    //let remove = createRemoveButton("sequence");
+    //remove.setAttribute("class", "col");
+    //seqContainer.appendChild(remove);
     let tags = createTagSystem();
     tags.setAttribute("class", "row whole-tag");
     seqContainer.appendChild(tags);
