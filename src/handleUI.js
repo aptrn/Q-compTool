@@ -490,6 +490,10 @@ function updateMain(){
     let others = Tonal.Scale.scaleChords(output.key);
     modalAlterationList = [].concat(modalAlterationList, others);
     modalAlterationList = Array.from(new Set(modalAlterationList));
+    modalAlterationList = Tonal.ChordType.all().map(get => get.aliases[0]);
+    modalAlterationList.sort();
+
+    console.log(Tonal.ChordType.all().map(get => get.aliases[0]));
 }
 function updateValues(){
     updateMain();
