@@ -374,7 +374,8 @@ function updateChords(){
             output.pool[i].tension[t] = {};
 		    output.pool[i].tension[t].selection = modalAlterationList[resultSelection[t][i].tension];
 			output.pool[i].tension[t].name = resultChord.name;
-            output.pool[i].tension[t].notes = resultChord.notes.map(Tonal.Note.chroma);
+            output.pool[i].tension[t].notes = checkOctave(resultChord.notes.map(Tonal.Note.chroma));
+
             $(allChords[i]).find(".result-name")[t].innerHTML = output.pool[i].tension[t].name ;
             //$(allChords[i]).find(".result-notes")[t].innerHTML = String(output.pool[i].tension[t].notes);
             let gradeSelectors = $(allChords[i]).find(".grade-sel");
@@ -391,6 +392,18 @@ function updateChords(){
             }
 		}
     }
+}
+
+function checkOctave(inputNotes){
+    let outputNotes = new Array(inputNotes.length);
+    outputNotes[0] = inputNotes[0];
+    let oct = 0;
+    for(let n = 1; n < inputNotes.length; n++){
+        // [ 0, 4, 7, 10, 2, 9 ]
+        if(inputNotes[n - 1] > inputNotes[n]) oct++; 
+        outputNotes[n] = inputNotes[n] + 12 * oct;
+    }
+    return outputNotes;
 }
 
 function updateSequences(){
@@ -493,7 +506,7 @@ function updateMain(){
     modalAlterationList = Tonal.ChordType.all().map(get => get.aliases[0]);
     modalAlterationList.sort();
 
-    console.log(Tonal.ChordType.all().map(get => get.aliases[0]));
+    //console.log(Tonal.ChordType.all().map(get => get.aliases[0]));
 }
 function updateValues(){
     updateMain();
@@ -503,18 +516,18 @@ function updateValues(){
 
 function makeNoise(notes){
     let piano = $("#piano-viz")[0];
-    for(let i = 0; i < lastPlayedChord.length; i++) piano.setNoteUp(lastPlayedChord[i].note, 0);
+    for(let i = 0; i < lastPlayedChord.length; i++) piano.setNoteUp(lastPlayedChord[i].note, lastPlayedChord[i].octave);
     lastPlayedChord = new Array(notes.length);
     for(var i = 0; i < notes.length; i++){
         Synth.setSampleRate(44100); // sets sample rate to 20000Hz
         Synth.setVolume(0.1337); // even better.
         let note = Tonal.Midi.midiToNoteName(notes[i], { pitchClass: true, sharps: true });
-        //console.log(note);
-        Synth.play("piano", note, octave, duration);
-        piano.setNoteDown(note, 0);
+        let actualOctave = parseInt(Math.floor(notes[i] / 12)) + parseInt(octave);
+        Synth.play("piano", note, actualOctave, duration);
+        piano.setNoteDown(note, Math.floor(notes[i] / 12));
         lastPlayedChord[i] = {};
         lastPlayedChord[i].note = note;
-        //lastPlayedChord[i].octave = octave;
+        lastPlayedChord[i].octave = Math.floor(notes[i] / 12);
     }
 }
 
@@ -523,6 +536,7 @@ function play(id, t) {
     //console.log("id: " + id + " t: " + t);
    
     notes = output.pool[id].tension[t].notes;
+
     makeNoise(notes);
 }
 
@@ -585,7 +599,6 @@ function createFromJson(object){
         let newSequence = createSequence();
         $(newSequence).find("#length")[0].value = output.sequences[i].chords.length;
         for(let c = 0; c < output.sequences[i].chords.length; c++){
-            console.log(output.sequences[i]);
             $(newSequence).find(".stepsPool")[0].appendChild(createSequenceStep(c, output.sequences[i].chords[c].index, 0));
         }
         for(let t = 0; t < output.sequences[i].tag.length; t++){
