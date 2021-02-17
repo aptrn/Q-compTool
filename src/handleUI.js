@@ -543,8 +543,23 @@ function play(id, t) {
     makeNoise(notes);
 }
 
-function matchGrades(){
+function autofill(){
+    $("#sequencesPool").empty(); 
+    updateMain();
+  
+    for(let i = 0; i < 1; i++){
+        let newSequence = createSequence();
+        $(newSequence).find("#length")[0].value = $(".chord").length;
+        for(let c = 0; c < output.pool.length; c++){
+            $(newSequence).find(".stepsPool")[0].appendChild(createSequenceStep(c, c, 0));
+        }
+        document.getElementById("sequencesPool").appendChild(newSequence);
+        updateValues();
+    }
+    updateMain();
+}
 
+function matchGrades(){
     updateMain();
     $("#chordsPool").empty(); 
     for(let i = $(".chord").length; i < gradesList.length; i++){
