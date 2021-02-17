@@ -516,13 +516,16 @@ function updateValues(){
 
 function makeNoise(notes){
     let piano = $("#piano-viz")[0];
-    for(let i = 0; i < lastPlayedChord.length; i++) piano.setNoteUp(lastPlayedChord[i].note, lastPlayedChord[i].octave);
+    for(let i = 0; i < lastPlayedChord.length; i++) {
+        if(lastPlayedChord[i] != undefined) piano.setNoteUp(lastPlayedChord[i].note, lastPlayedChord[i].octave);
+    }
     lastPlayedChord = new Array(notes.length);
     for(var i = 0; i < notes.length; i++){
         Synth.setSampleRate(44100); // sets sample rate to 20000Hz
         Synth.setVolume(0.1337); // even better.
         let note = Tonal.Midi.midiToNoteName(notes[i], { pitchClass: true, sharps: true });
         let actualOctave = parseInt(Math.floor(notes[i] / 12)) + parseInt(octave);
+        console.log(notes);
         Synth.play("piano", note, actualOctave, duration);
         piano.setNoteDown(note, Math.floor(notes[i] / 12));
         lastPlayedChord[i] = {};
