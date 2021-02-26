@@ -291,8 +291,11 @@ function createAlterationSelector(index){
         updateValues();
     });
     tensionContainer.appendChild(select);
+    let priorityLabel = document.createElement("label");
+    priorityLabel.innerHTML = "Priority";
+    tensionContainer.appendChild(priorityLabel);
     let priority = createPriorityPool(index);
-    //priority.setAttribute("class", "col-md-4")
+    //priority.setAttribute("class", "row col-md-2")
     tensionContainer.appendChild(priority);
     let play = createPlayButton(index);
     play.setAttribute("class", "col-md-2")
