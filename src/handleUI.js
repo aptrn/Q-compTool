@@ -650,6 +650,10 @@ function createFromJson(object){
         for(let t = 0; t < output.pool[i].tension.length; t++){
             tensions[t].value = modalAlterationList.indexOf(output.pool[i].tension[t].selection);
             let thisChordPriority = $($($(newChord).find(".alteration-pool")[t]).find(".priority-pool"));
+            if(!output.pool[i].tension[t].priority){
+                output.pool[i].tension[t].priority = new Array(output.pool[i].tension[t].notes.length);
+                for(let n = 0; n < output.pool[i].tension[t].priority.length; n++) output.pool[i].tension[t].priority[n] = n;
+            }
             createPriority(thisChordPriority, i, t);
         }
         document.getElementById("chordsPool").appendChild(newChord);
