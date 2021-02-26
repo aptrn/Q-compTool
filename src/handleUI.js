@@ -153,7 +153,7 @@ function createSequenceStep(index, chordSel, tensionSel){
     stepContainer.appendChild(createIndexLabel(index));
     stepContainer.appendChild(createChordSelector(chordSel));
     //stepContainer.appendChild(createTensionSelector(tensionSel));
-    stepContainer.appendChild(createResult());
+    //stepContainer.appendChild(createResult());
     return stepContainer;
 }
 
@@ -291,25 +291,24 @@ function createAlterationSelector(index){
         updateValues();
     });
     tensionContainer.appendChild(select);
-    let res = createResult();
-    res.setAttribute("class", "col-md-4")
-    tensionContainer.appendChild(res);
+    let priority = createPriorityPool(index);
+    //priority.setAttribute("class", "col-md-4")
+    tensionContainer.appendChild(priority);
     let play = createPlayButton(index);
     play.setAttribute("class", "col-md-2")
     tensionContainer.appendChild(play);
     return tensionContainer;
 }
 
-function createResult(){
-    let resultDiv = document.createElement("div");
-    resultDiv.id = "result";
-    let nameLabel = document.createElement("label");
-    nameLabel.setAttribute("class", "result-name");
-    resultDiv.appendChild(nameLabel);
+function createPriorityPool(index){
+    let priority = document.createElement("div");
+    priority.setAttribute("class", "priority-pool");
+    //let priorityPool = document.createElement("div");
+    //priority.appendChild(priorityPool);
     //let noteLabel = document.createElement("label");
     //noteLabel.setAttribute("class", "result-notes");
-    //resultDiv.appendChild(noteLabel);
-    return resultDiv;
+    //priority.appendChild(noteLabel);
+    return priority;
 }
 
 
@@ -335,6 +334,40 @@ function createPlayButton(tension){
     });
     return playButton;
 }
+
+function createPriority(thisChordPriority, i, t){
+    let existingPriority = $(thisChordPriority).find(".priority-selector");
+    if(existingPriority.length > 0){
+        for(let p = 0; p < existingPriority.length; p++){
+            output.pool[i].tension[t].priority[p] = $(existingPriority)[p].value;
+        }
+    }
+
+    $(thisChordPriority).empty();
+
+    for(let c = 0; c < output.pool[i].tension[t].notes.length; c++){
+            let label = document.createElement("label");
+            label.innerHTML = Tonal.Midi.midiToNoteName(output.pool[i].tension[t].notes[c], { pitchClass: true, sharps: true });
+            $(thisChordPriority)[0].appendChild(label);
+            let select = document.createElement("select");
+            select.setAttribute("class", "priority-selector");
+            select.index = c;
+            for(let n = 0; n < output.pool[i].tension[t].notes.length; n++){
+                let option = document.createElement("option");
+                option.value = n;
+                option.innerHTML = n;
+                select.appendChild(option);
+            }
+            if(output.pool[i].tension[t].priority[c]) select.value = output.pool[i].tension[t].priority[c];
+            else select.value = c;
+            $(select).on('input', function(){
+                updateValues();
+        });
+        $(thisChordPriority)[0].appendChild(select);
+        output.pool[i].tension[t].priority[c] = select.value;
+    }
+}
+
 function updateChords(){
     //POOL
     let allChords = $(".chord");
@@ -375,9 +408,11 @@ function updateChords(){
 		    output.pool[i].tension[t].selection = modalAlterationList[resultSelection[t][i].tension];
 			output.pool[i].tension[t].name = resultChord.name;
             output.pool[i].tension[t].notes = checkOctave(resultChord.notes.map(Tonal.Note.chroma));
+            output.pool[i].tension[t].priority = new Array(output.pool[i].tension[t].notes.length);
 
-            $(allChords[i]).find(".result-name")[t].innerHTML = output.pool[i].tension[t].name ;
-            //$(allChords[i]).find(".result-notes")[t].innerHTML = String(output.pool[i].tension[t].notes);
+            //$(allChords[i]).find(".result-name")[t].innerHTML = output.pool[i].tension[t].name ;
+            //$(allChords[i]).find(".result-notes")[t].innerHTML = String(output.pool[i].tension[t].notes)
+
             let gradeSelectors = $(allChords[i]).find(".grade-sel");
             for(let s = 0; s < gradeSelectors.length; s++){
                 let oldValue = gradeSelectors[s].value;
@@ -390,6 +425,9 @@ function updateChords(){
                 }
                 gradeSelectors[s].value = oldValue;
             }
+
+            let thisChordPriority = $($($(allChords[i]).find(".alteration-pool")[t]).find(".priority-pool"));
+            createPriority(thisChordPriority, i, t);
 		}
     }
 }
@@ -608,9 +646,12 @@ function createFromJson(object){
         let tensions = $($(newChord).find(".tension-sel"));
         for(let t = 0; t < output.pool[i].tension.length; t++){
             tensions[t].value = modalAlterationList.indexOf(output.pool[i].tension[t].selection);
+            let thisChordPriority = $($($(newChord).find(".alteration-pool")[t]).find(".priority-pool"));
+            createPriority(thisChordPriority, i, t);
         }
         document.getElementById("chordsPool").appendChild(newChord);
     }
+    updateChords();
     let sequencePool = $("#sequencesPool");
     sequencePool.empty();
     for(let i = 0; i < output.sequences.length; i++){
