@@ -541,6 +541,7 @@ function updateMain(){
         gradesList = Tonal.Mode.notes(output.key, output.root);
         modalAlterationList = getModeAlterations(output.key);
     }
+    gradesList = [ 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
     let others = Tonal.Scale.scaleChords(output.key);
     modalAlterationList = [].concat(modalAlterationList, others);
     modalAlterationList = Array.from(new Set(modalAlterationList));
