@@ -633,6 +633,21 @@ function randomAlterations(){
     updateValues();     
 }
 
+function copyTensionZero(){
+    let tensions = $($("#chordsPool").find(".tension-sel"));
+    let currentTension = new Array(tensions.length);
+    let i = 0;
+    for(let t = 0; t < tensions.length; t+=4){
+        currentTension[i] = tensions[t].value;
+        tensions[t + 1].value = currentTension[i];
+        tensions[t + 2].value = currentTension[i];
+        tensions[t + 3].value = currentTension[i];
+        i++;
+    }
+    updateValues();     
+}
+
+
 function createFromJson(object){
     output = object;
     
