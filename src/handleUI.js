@@ -633,6 +633,22 @@ function randomAlterations(){
     updateValues();     
 }
 
+function randomExtensionTensionZero(){
+    let grades = $($("#chordsPool").find(".grade-sel"));
+    let tensions = $($("#chordsPool").find(".tension-sel"));
+    for(let g = 0; g < grades.length; g++){
+        let chord =  gradesList[grades[g].value] + modalAlterationList[tensions[g * 4].value];
+        let possibleExtensions = Tonal.Chord.extended(chord);
+        if(possibleExtensions.length > 0){
+            tensions[(g * 4) + 1].value = modalAlterationList.indexOf(Tonal.Chord.get(possibleExtensions[0 % possibleExtensions.length]).aliases[0]);
+            tensions[(g * 4) + 2].value = modalAlterationList.indexOf(Tonal.Chord.get(possibleExtensions[1 % possibleExtensions.length]).aliases[0]);
+            tensions[(g * 4) + 3].value = modalAlterationList.indexOf(Tonal.Chord.get(possibleExtensions[2 % possibleExtensions.length]).aliases[0]);
+        }
+        console.log(possibleExtensions);
+    }
+    updateValues();     
+}
+
 function copyTensionZero(){
     let tensions = $($("#chordsPool").find(".tension-sel"));
     let currentTension = new Array(tensions.length);
