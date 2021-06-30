@@ -633,7 +633,7 @@ function randomAlterations(){
     updateValues();     
 }
 
-function randomExtensionTensionZero(){
+function extendTensionZero(){
     let grades = $($("#chordsPool").find(".grade-sel"));
     let tensions = $($("#chordsPool").find(".tension-sel"));
     for(let g = 0; g < grades.length; g++){
